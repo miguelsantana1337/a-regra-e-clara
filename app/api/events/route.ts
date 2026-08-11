@@ -1,10 +1,8 @@
-import { getDb } from "@/db";
-import { events } from "@/db/schema";
-import { ensureDatabase } from "@/db/runtime";
 import {
   ANALYTICS_EVENTS,
   type AnalyticsEventName,
 } from "@/lib/analytics/events";
+import { getSupabaseAdmin } from "@/lib/supabase/admin";
 
 type EventPayload = {
   name?: AnalyticsEventName;
@@ -12,6 +10,9 @@ type EventPayload = {
   diagnosticId?: string;
   properties?: Record<string, unknown>;
 };
+
+const UUID_PATTERN =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 export async function POST(request: Request) {
   try {
@@ -23,23 +24,27 @@ export async function POST(request: Request) {
       return Response.json({ error: "Evento inválido." }, { status: 400 });
     }
 
-    const properties = JSON.stringify(payload.properties ?? {});
-    if (properties.length > 4000) {
+    const properties = payload.properties ?? {};
+    if (JSON.stringify(properties).length > 4000) {
       return Response.json({ error: "Propriedades excedem o limite." }, { status: 400 });
     }
 
-    await ensureDatabase();
-    const db = getDb();
-    await db.insert(events).values({
+    const supabase = getSupabaseAdmin();
+    const diagnosticId = UUID_PATTERN.test(payload.diagnosticId ?? "")
+      ? payload.diagnosticId
+      : null;
+    const { error } = await supabase.from("events").insert({
       id: crypto.randomUUID(),
-      sessionId,
-      diagnosticId: payload.diagnosticId?.slice(0, 80) ?? null,
+      session_id: sessionId,
+      diagnostic_id: diagnosticId,
       name,
       properties,
     });
+    if (error) throw error;
 
     return new Response(null, { status: 204 });
-  } catch {
-    return Response.json({ error: "Não foi possível registrar o evento." }, { status: 400 });
+  } catch (error) {
+    console.error("Falha ao registrar evento", error);
+    return Response.json({ error: "Não foi possível registrar o evento." }, { status: 500 });
   }
 }

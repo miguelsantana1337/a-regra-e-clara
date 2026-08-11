@@ -1,17 +1,24 @@
-import { eq } from "drizzle-orm";
-import { getDb } from "@/db";
-import { diagnostics, users } from "@/db/schema";
-import { ensureDatabase } from "@/db/runtime";
 import { getAreaLevel, getGeneralLevel } from "@/lib/diagnostic/scoring";
+import { getSupabaseAdmin } from "@/lib/supabase/admin";
 import type { DiagnosticArea } from "@/types/diagnostic";
 
-function parsePrimaryAreas(value: string): DiagnosticArea[] {
-  try {
-    const parsed = JSON.parse(value) as unknown;
-    return Array.isArray(parsed) ? (parsed as DiagnosticArea[]) : [];
-  } catch {
-    return [];
-  }
+const UUID_PATTERN =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const DIAGNOSTIC_AREAS = new Set<DiagnosticArea>([
+  "discipline",
+  "principles",
+  "relationships",
+  "health",
+  "work_money",
+]);
+
+function parsePrimaryAreas(value: unknown): DiagnosticArea[] {
+  return Array.isArray(value)
+    ? value.filter(
+        (area): area is DiagnosticArea =>
+          typeof area === "string" && DIAGNOSTIC_AREAS.has(area as DiagnosticArea),
+      )
+    : [];
 }
 
 export async function GET(
@@ -20,57 +27,56 @@ export async function GET(
 ) {
   try {
     const { id } = await context.params;
-    if (!id || id.length > 80) {
+    if (!UUID_PATTERN.test(id)) {
       return Response.json({ error: "Resultado inválido." }, { status: 400 });
     }
 
-    await ensureDatabase();
-    const db = getDb();
-    const [row] = await db
-      .select({
-        id: diagnostics.id,
-        name: users.name,
-        discipline: diagnostics.discipline,
-        principles: diagnostics.principles,
-        relationships: diagnostics.relationships,
-        health: diagnostics.health,
-        workMoney: diagnostics.workMoney,
-        total: diagnostics.total,
-        primaryAreas: diagnostics.primaryAreas,
-        createdAt: diagnostics.createdAt,
-      })
-      .from(diagnostics)
-      .innerJoin(users, eq(users.id, diagnostics.userId))
-      .where(eq(diagnostics.id, id))
-      .limit(1);
+    const supabase = getSupabaseAdmin();
+    const { data: row, error: diagnosticError } = await supabase
+      .from("diagnostics")
+      .select(
+        "id,user_id,discipline,principles,relationships,health,work_money,total,primary_areas,created_at",
+      )
+      .eq("id", id)
+      .maybeSingle();
+
+    if (diagnosticError) throw diagnosticError;
 
     if (!row) {
       return Response.json({ error: "Resultado não encontrado." }, { status: 404 });
     }
+
+    const { data: user, error: userError } = await supabase
+      .from("users")
+      .select("name")
+      .eq("id", row.user_id)
+      .single();
+
+    if (userError) throw userError;
 
     const areas = {
       discipline: row.discipline,
       principles: row.principles,
       relationships: row.relationships,
       health: row.health,
-      work_money: row.workMoney,
+      work_money: row.work_money,
     };
 
     return Response.json({
       id: row.id,
-      name: row.name,
+      name: user.name,
       areas,
       total: row.total,
-      primaryAreas: parsePrimaryAreas(row.primaryAreas),
+      primaryAreas: parsePrimaryAreas(row.primary_areas),
       areaLevels: {
         discipline: getAreaLevel(row.discipline),
         principles: getAreaLevel(row.principles),
         relationships: getAreaLevel(row.relationships),
         health: getAreaLevel(row.health),
-        work_money: getAreaLevel(row.workMoney),
+        work_money: getAreaLevel(row.work_money),
       },
       generalLevel: getGeneralLevel(row.total),
-      createdAt: row.createdAt,
+      createdAt: row.created_at,
     });
   } catch {
     return Response.json(

@@ -1,9 +1,12 @@
 "use client";
 
 import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { captureUtm, getSessionId, trackEvent } from "@/lib/analytics/client";
 
 export function LandingStart() {
+  const router = useRouter();
+
   useEffect(() => {
     const utm = captureUtm();
     getSessionId();
@@ -13,7 +16,7 @@ export function LandingStart() {
   function startDiagnostic() {
     const query = window.location.search;
     trackEvent("diagnostic_started", captureUtm());
-    window.location.assign(`/diagnostico/quiz${query}`);
+    router.push(`/diagnostico/quiz${query}`);
   }
 
   return (

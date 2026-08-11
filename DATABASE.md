@@ -1,5 +1,10 @@
 # Dados do MVP
 
+O banco é PostgreSQL no Supabase. A estrutura versionada está em
+`supabase/migrations/20260811000000_initial_schema.sql`. Todas as tabelas têm
+RLS habilitado e não possuem políticas públicas; a aplicação grava e lê apenas
+por rotas de servidor autenticadas com `SUPABASE_SECRET_KEY`.
+
 ## `users`
 
 Nome, e-mail único, WhatsApp, consentimento de marketing e datas de criação/atualização.

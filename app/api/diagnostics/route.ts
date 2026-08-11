@@ -1,8 +1,5 @@
-import { eq } from "drizzle-orm";
-import { getDb } from "@/db";
-import { diagnostics, events, users } from "@/db/schema";
-import { ensureDatabase } from "@/db/runtime";
 import { scoreDiagnostic } from "@/lib/diagnostic/scoring";
+import { getSupabaseAdmin } from "@/lib/supabase/admin";
 import type { Answer, UtmData } from "@/types/diagnostic";
 
 type CreateDiagnosticPayload = {
@@ -50,80 +47,85 @@ export async function POST(request: Request) {
     }
 
     const score = scoreDiagnostic(payload.answers ?? []);
-    await ensureDatabase();
-    const db = getDb();
+    const supabase = getSupabaseAdmin();
+    const { data: existingUser, error: lookupError } = await supabase
+      .from("users")
+      .select("id")
+      .eq("email", email)
+      .maybeSingle();
 
-    const [existingUser] = await db
-      .select({ id: users.id })
-      .from(users)
-      .where(eq(users.email, email))
-      .limit(1);
+    if (lookupError) throw lookupError;
+
     const userId = existingUser?.id ?? crypto.randomUUID();
 
     if (existingUser) {
-      await db
-        .update(users)
-        .set({
+      const { error } = await supabase
+        .from("users")
+        .update({
           name,
           whatsapp,
-          marketingConsent: Boolean(payload.lead?.consent),
-          updatedAt: new Date().toISOString(),
+          marketing_consent: Boolean(payload.lead?.consent),
+          updated_at: new Date().toISOString(),
         })
-        .where(eq(users.id, userId));
+        .eq("id", userId);
+      if (error) throw error;
     } else {
-      await db.insert(users).values({
+      const { error } = await supabase.from("users").insert({
         id: userId,
         name,
         email,
         whatsapp,
-        marketingConsent: Boolean(payload.lead?.consent),
+        marketing_consent: Boolean(payload.lead?.consent),
       });
+      if (error) throw error;
     }
 
     const diagnosticId = crypto.randomUUID();
-    await db.insert(diagnostics).values({
+    const { error: diagnosticError } = await supabase.from("diagnostics").insert({
       id: diagnosticId,
-      userId,
+      user_id: userId,
       discipline: score.areas.discipline,
       principles: score.areas.principles,
       relationships: score.areas.relationships,
       health: score.areas.health,
-      workMoney: score.areas.work_money,
+      work_money: score.areas.work_money,
       total: score.total,
-      primaryAreas: JSON.stringify(score.primaryAreas),
-      generalLevel: score.generalLevel,
-      utmSource: optionalText(payload.utm?.source),
-      utmMedium: optionalText(payload.utm?.medium),
-      utmCampaign: optionalText(payload.utm?.campaign),
-      utmContent: optionalText(payload.utm?.content),
-      utmTerm: optionalText(payload.utm?.term),
+      primary_areas: score.primaryAreas,
+      general_level: score.generalLevel,
+      utm_source: optionalText(payload.utm?.source),
+      utm_medium: optionalText(payload.utm?.medium),
+      utm_campaign: optionalText(payload.utm?.campaign),
+      utm_content: optionalText(payload.utm?.content),
+      utm_term: optionalText(payload.utm?.term),
     });
+    if (diagnosticError) throw diagnosticError;
 
-    await db.insert(events).values([
+    const { error: eventsError } = await supabase.from("events").insert([
       {
         id: crypto.randomUUID(),
-        sessionId,
-        userId,
-        diagnosticId,
+        session_id: sessionId,
+        user_id: userId,
+        diagnostic_id: diagnosticId,
         name: "diagnostic_completed",
-        properties: JSON.stringify({
+        properties: {
           total_score: score.total,
           primary_area: score.primaryAreas,
-        }),
+        },
       },
       {
         id: crypto.randomUUID(),
-        sessionId,
-        userId,
-        diagnosticId,
+        session_id: sessionId,
+        user_id: userId,
+        diagnostic_id: diagnosticId,
         name: "lead_captured",
-        properties: JSON.stringify({
+        properties: {
           marketing_consent: Boolean(payload.lead?.consent),
           source: payload.utm?.source ?? null,
           campaign: payload.utm?.campaign ?? null,
-        }),
+        },
       },
     ]);
+    if (eventsError) throw eventsError;
 
     return Response.json(
       {
@@ -134,8 +136,20 @@ export async function POST(request: Request) {
       { status: 201 },
     );
   } catch (error) {
-    const message =
-      error instanceof Error ? error.message : "Não foi possível salvar seu diagnóstico.";
-    return Response.json({ error: message }, { status: 400 });
+    console.error("Falha ao salvar diagnóstico", error);
+    const message = error instanceof Error ? error.message : "";
+    const isAnswerError =
+      message.startsWith("Resposta") ||
+      message.startsWith("Cada resposta") ||
+      message.startsWith("Uma pergunta") ||
+      message.startsWith("Responda as 25");
+    return Response.json(
+      {
+        error: isAnswerError
+          ? message
+          : "Não foi possível salvar seu diagnóstico agora. Tente novamente.",
+      },
+      { status: isAnswerError ? 400 : 500 },
+    );
   }
 }
