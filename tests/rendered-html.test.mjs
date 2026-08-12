@@ -6,8 +6,9 @@ const templateRoot = new URL("../", import.meta.url);
 const previewRoot = new URL("../app/_sites-preview/", import.meta.url);
 
 test("ships the complete diagnostic landing", async () => {
-  const [page, landing, areas, layout] = await Promise.all([
+  const [page, landingStyles, landing, areas, layout] = await Promise.all([
     readFile(new URL("../app/diagnostico/page.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/diagnostico/landing.module.css", import.meta.url), "utf8"),
     readFile(new URL("../components/diagnostic/LandingStart.tsx", import.meta.url), "utf8"),
     readFile(new URL("../content/diagnostic/areas.ts", import.meta.url), "utf8"),
     readFile(new URL("../app/layout.tsx", import.meta.url), "utf8"),
@@ -18,6 +19,10 @@ test("ships the complete diagnostic landing", async () => {
   assert.match(landingSource, /Descubra por onde começar/i);
   assert.match(landingSource, /Disciplina &amp; Responsabilidade|Disciplina & Responsabilidade/i);
   assert.match(landingSource, /Descobrir minha prioridade/i);
+  assert.match(page, /landing\.module\.css/);
+  assert.match(page, /RELATÓRIO DE DIREÇÃO/);
+  assert.match(landingStyles, /--arc-accent:\s*#bd6f43/i);
+  assert.doesNotMatch(landingStyles, /#dfff33/i);
   assert.match(layout, /lang="pt-BR"/);
   assert.doesNotMatch(`${landingSource}\n${layout}`, /codex-preview|react-loading-skeleton/i);
 });

@@ -4,7 +4,13 @@ import { useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { captureUtm, getSessionId, trackEvent } from "@/lib/analytics/client";
 
-export function LandingStart({ location = "landing" }: { location?: string }) {
+export function LandingStart({
+  location = "landing",
+  className = "",
+}: {
+  location?: string;
+  className?: string;
+}) {
   const router = useRouter();
   const viewTrackedRef = useRef(false);
 
@@ -26,7 +32,11 @@ export function LandingStart({ location = "landing" }: { location?: string }) {
   }
 
   return (
-    <button className="primary-cta" type="button" onClick={startDiagnostic}>
+    <button
+      className={`primary-cta${className ? ` ${className}` : ""}`}
+      type="button"
+      onClick={startDiagnostic}
+    >
       <span>DESCOBRIR MINHA PRIORIDADE</span>
       <span aria-hidden="true">↗</span>
     </button>

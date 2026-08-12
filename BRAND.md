@@ -22,4 +22,18 @@ Fracasso, irresponsável, desorganizado, vida ruim, cura, tratamento, enriquecim
 
 ## Visual
 
-Grafite azulado, branco marfim, bege e terracota. Tipografia grande com leitura editorial, contraste alto, grades simples e poucos elementos decorativos. A terracota sinaliza ação e prioridade sem trazer a aparência neon da V1. O conteúdo precisa continuar legível e marcante em telas pequenas.
+Grafite azulado, branco marfim, bege e terracota. A marca deve parecer um sistema pessoal de direção: relatório, grade, índice, regra numerada, barra de progresso e próximo passo. Esses elementos fazem a estética nascer do próprio produto, em vez de depender de decoração genérica.
+
+A tipografia combina impacto editorial com informação operacional em monoespaçada. A terracota sinaliza prioridade e movimento; não deve ocupar tudo nem funcionar como neon. Fundos claros lembram papel e instrumentos de trabalho. Fundos escuros marcam diagnóstico, contraste e tomada de decisão.
+
+Evitar imagens espirituais, paisagens contemplativas, excesso de textura, gradientes de infoproduto e elementos urbanos sem função. O conteúdo precisa continuar legível, sóbrio e marcante em telas pequenas.
+
+## Sistema da landing
+
+- Hero: promessa + amostra concreta do relatório recebido.
+- Problema: comparação visual entre rotina sem direção e rotina com prioridade.
+- Processo: Clareza → Prioridade → Ação.
+- Áreas: cartões de leitura com linguagem de painel, não de horóscopo.
+- Produto: objeto editorial único que organiza os materiais como método.
+- CTA final: uma regra de saída e um movimento claro.
+- Os estilos da landing ficam isolados em CSS Module para não depender do tema global do quiz e do resultado.
