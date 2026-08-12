@@ -6,23 +6,28 @@ const templateRoot = new URL("../", import.meta.url);
 const previewRoot = new URL("../app/_sites-preview/", import.meta.url);
 
 test("ships the complete diagnostic landing", async () => {
-  const [page, landingStyles, landing, areas, layout] = await Promise.all([
+  const [page, landingStyles, landing, areas, layout, socialImage] = await Promise.all([
     readFile(new URL("../app/diagnostico/page.tsx", import.meta.url), "utf8"),
     readFile(new URL("../app/diagnostico/landing.module.css", import.meta.url), "utf8"),
     readFile(new URL("../components/diagnostic/LandingStart.tsx", import.meta.url), "utf8"),
     readFile(new URL("../content/diagnostic/areas.ts", import.meta.url), "utf8"),
     readFile(new URL("../app/layout.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/opengraph-image.tsx", import.meta.url), "utf8"),
   ]);
 
   const landingSource = `${page}\n${landing}\n${areas}`;
   assert.match(page, /title:\s*"Diagnóstico"/i);
-  assert.match(landingSource, /Descubra por onde começar/i);
+  assert.match(landingSource, /Você não precisa/i);
+  assert.match(landingSource, /Precisa saber o que vem primeiro/i);
   assert.match(landingSource, /Disciplina &amp; Responsabilidade|Disciplina & Responsabilidade/i);
   assert.match(landingSource, /Descobrir minha prioridade/i);
   assert.match(page, /landing\.module\.css/);
-  assert.match(page, /RELATÓRIO DE DIREÇÃO/);
-  assert.match(landingStyles, /--arc-accent:\s*#bd6f43/i);
+  assert.match(page, /uma prioridade, uma regra e três ações/i);
+  assert.match(landingStyles, /--editorial-rust:\s*#bc5637/i);
   assert.doesNotMatch(landingStyles, /#dfff33/i);
+  assert.doesNotMatch(page, /RELATÓRIO DE DIREÇÃO|sheetScore|systemLine|processGrid/);
+  assert.match(socialImage, /Precisa saber o/);
+  assert.doesNotMatch(socialImage, /63\s*\/\s*100|#dfff33/i);
   assert.match(layout, /lang="pt-BR"/);
   assert.doesNotMatch(`${landingSource}\n${layout}`, /codex-preview|react-loading-skeleton/i);
 });

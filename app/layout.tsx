@@ -25,8 +25,6 @@ export async function generateMetadata(): Promise<Metadata> {
   const baseUrl = new URL(`${protocol}://${host}`);
   const description =
     "Descubra em cerca de 90 segundos qual área da sua vida pede atenção primeiro e receba três ações práticas.";
-  const imageUrl = new URL("/og.png", baseUrl).toString();
-
   return {
     metadataBase: baseUrl,
     title: {
@@ -39,13 +37,11 @@ export async function generateMetadata(): Promise<Metadata> {
       description,
       type: "website",
       locale: "pt_BR",
-      images: [{ url: imageUrl, width: 1200, height: 630, alt: "A Regra é Clara — diagnóstico gratuito" }],
     },
     twitter: {
       card: "summary_large_image",
       title: "A Regra é Clara",
       description,
-      images: [imageUrl],
     },
   };
 }
