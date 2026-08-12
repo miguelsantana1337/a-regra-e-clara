@@ -36,7 +36,21 @@ function areaNames(areas: DiagnosticArea[]) {
   return `${names.slice(0, -1).join(", ")} e ${names.at(-1)}`;
 }
 
-function priorityHeading(areas: DiagnosticArea[]) {
+function priorityHeading(
+  areas: DiagnosticArea[],
+  areaLevels: Record<DiagnosticArea, DiagnosticLevel>,
+) {
+  const allStable = areas.every((area) => areaLevels[area] === "in_order");
+
+  if (allStable && areas.length === 5) {
+    return "SUAS CINCO ÁREAS ESTÃO EQUILIBRADAS NESTE NÍVEL";
+  }
+  if (allStable && areas.length === 1) {
+    return "SUA ÁREA COM MAIOR ESPAÇO PARA APERFEIÇOAR É";
+  }
+  if (allStable) {
+    return `SUAS ${areas.length} ÁREAS COM MAIOR ESPAÇO PARA APERFEIÇOAR SÃO`;
+  }
   if (areas.length === 1) return "SUA PRINCIPAL ÁREA DE ATENÇÃO HOJE É";
   if (areas.length === 2) return "HOJE EXISTEM DUAS ÁREAS PEDINDO SUA ATENÇÃO";
   return `HOJE EXISTEM ${areas.length} ÁREAS PEDINDO SUA ATENÇÃO`;
@@ -57,11 +71,6 @@ export function DiagnosticResult({ id }: { id: string }) {
         trackEvent(
           "result_viewed",
           { total_score: data.total, primary_area: data.primaryAreas },
-          data.id,
-        );
-        trackEvent(
-          "offer_viewed",
-          { product: "kit-a-regra-e-clara", price: 27 },
           data.id,
         );
       })
@@ -149,7 +158,7 @@ export function DiagnosticResult({ id }: { id: string }) {
 
       <section className="priority-section" aria-labelledby="priority-title">
         <div className="priority-heading">
-          <p>{priorityHeading(result.primaryAreas)}</p>
+          <p>{priorityHeading(result.primaryAreas, result.areaLevels)}</p>
           <h2 id="priority-title">{areaNames(result.primaryAreas).toUpperCase()}.</h2>
         </div>
 

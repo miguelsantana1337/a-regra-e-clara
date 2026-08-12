@@ -39,16 +39,31 @@ export function scoreDiagnostic(answers: Answer[]): DiagnosticScore {
   }
 
   if (answerMap.size !== QUESTIONS.length) {
-    throw new Error("Responda as 25 perguntas para concluir o diagnóstico.");
+    throw new Error(
+      `Responda as ${QUESTIONS.length} perguntas para concluir o diagnóstico.`,
+    );
   }
 
-  const areas = Object.fromEntries(
+  const rawAreas = Object.fromEntries(
     AREA_ORDER.map((area) => [area, 0]),
   ) as AreaScores;
 
   for (const question of QUESTIONS) {
-    areas[question.area] += answerMap.get(question.id) ?? 0;
+    rawAreas[question.area] += answerMap.get(question.id) ?? 0;
   }
+
+  const areas = Object.fromEntries(
+    AREA_ORDER.map((area) => {
+      const questionCount = QUESTIONS.filter(
+        (question) => question.area === area,
+      ).length;
+      const maximumRawScore = questionCount * 4;
+      const normalizedScore = maximumRawScore
+        ? Math.round((rawAreas[area] / maximumRawScore) * 20)
+        : 0;
+      return [area, normalizedScore];
+    }),
+  ) as AreaScores;
 
   const total = AREA_ORDER.reduce((sum, area) => sum + areas[area], 0);
   const lowestScore = Math.min(...AREA_ORDER.map((area) => areas[area]));

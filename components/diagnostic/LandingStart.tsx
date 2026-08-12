@@ -1,27 +1,33 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { captureUtm, getSessionId, trackEvent } from "@/lib/analytics/client";
 
-export function LandingStart() {
+export function LandingStart({ location = "landing" }: { location?: string }) {
   const router = useRouter();
+  const viewTrackedRef = useRef(false);
 
   useEffect(() => {
+    if (location !== "hero" || viewTrackedRef.current) return;
+    viewTrackedRef.current = true;
     const utm = captureUtm();
     getSessionId();
-    trackEvent("diagnostic_landing_view", utm);
-  }, []);
+    trackEvent("landing_viewed", { ...utm, page_path: "/diagnostico" });
+  }, [location]);
 
   function startDiagnostic() {
     const query = window.location.search;
-    trackEvent("diagnostic_started", captureUtm());
+    trackEvent("quiz_cta_clicked", {
+      ...captureUtm(),
+      cta_location: location,
+    });
     router.push(`/diagnostico/quiz${query}`);
   }
 
   return (
     <button className="primary-cta" type="button" onClick={startDiagnostic}>
-      <span>COMEÇAR MEU DIAGNÓSTICO</span>
+      <span>DESCOBRIR MINHA PRIORIDADE</span>
       <span aria-hidden="true">↗</span>
     </button>
   );

@@ -29,9 +29,9 @@ export const AREAS: Record<DiagnosticArea, AreaDefinition> = {
   },
   principles: {
     id: "principles",
-    name: "Fé & Princípios",
-    shortName: "Fé & Princípios",
-    eyebrow: "Coerência, reflexão e sabedoria",
+    name: "Princípios & Direção",
+    shortName: "Princípios",
+    eyebrow: "Coerência, valores e escolhas",
     description:
       "Quanto seus princípios aparecem nas suas decisões e na maneira como você vive.",
     number: "02",

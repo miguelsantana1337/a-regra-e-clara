@@ -7,7 +7,7 @@ export function BrandHeader({ quiet = false }: { quiet?: boolean }) {
         <span className="brand-mark__rule" aria-hidden="true" />
         <span>A REGRA É CLARA</span>
       </Link>
-      <span className="brand-header__edition">DIAGNÓSTICO / 01</span>
+      <span className="brand-header__edition">DIAGNÓSTICO / V2</span>
     </header>
   );
 }

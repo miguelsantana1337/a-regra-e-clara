@@ -32,6 +32,6 @@ Sessão, usuário opcional, diagnóstico opcional, nome do evento, propriedades 
 ## Privacidade
 
 - Guardar somente o necessário para entregar resultado, mensurar o funil e operar a compra.
-- Não persistir as 25 respostas individuais neste MVP.
+- Não persistir as 10 respostas individuais neste MVP.
 - Consentimento de marketing não pode ser presumido.
 - Definir política de retenção e canal de exclusão antes do lançamento comercial.

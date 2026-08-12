@@ -100,31 +100,20 @@ export async function POST(request: Request) {
     });
     if (diagnosticError) throw diagnosticError;
 
-    const { error: eventsError } = await supabase.from("events").insert([
-      {
-        id: crypto.randomUUID(),
-        session_id: sessionId,
-        user_id: userId,
-        diagnostic_id: diagnosticId,
-        name: "diagnostic_completed",
-        properties: {
-          total_score: score.total,
-          primary_area: score.primaryAreas,
-        },
+    const { error: eventsError } = await supabase.from("events").insert({
+      id: crypto.randomUUID(),
+      session_id: sessionId,
+      user_id: userId,
+      diagnostic_id: diagnosticId,
+      name: "lead_submitted",
+      properties: {
+        total_score: score.total,
+        primary_areas: score.primaryAreas,
+        marketing_consent: Boolean(payload.lead?.consent),
+        source: payload.utm?.source ?? null,
+        campaign: payload.utm?.campaign ?? null,
       },
-      {
-        id: crypto.randomUUID(),
-        session_id: sessionId,
-        user_id: userId,
-        diagnostic_id: diagnosticId,
-        name: "lead_captured",
-        properties: {
-          marketing_consent: Boolean(payload.lead?.consent),
-          source: payload.utm?.source ?? null,
-          campaign: payload.utm?.campaign ?? null,
-        },
-      },
-    ]);
+    });
     if (eventsError) throw eventsError;
 
     return Response.json(
@@ -142,7 +131,7 @@ export async function POST(request: Request) {
       message.startsWith("Resposta") ||
       message.startsWith("Cada resposta") ||
       message.startsWith("Uma pergunta") ||
-      message.startsWith("Responda as 25");
+      message.startsWith("Responda as ");
     return Response.json(
       {
         error: isAnswerError

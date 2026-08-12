@@ -24,7 +24,7 @@ export async function generateMetadata(): Promise<Metadata> {
     (host.startsWith("localhost") ? "http" : "https");
   const baseUrl = new URL(`${protocol}://${host}`);
   const description =
-    "Descubra qual área da sua vida pede atenção primeiro em um diagnóstico gratuito de três minutos.";
+    "Descubra em cerca de 90 segundos qual área da sua vida pede atenção primeiro e receba três ações práticas.";
   const imageUrl = new URL("/og.png", baseUrl).toString();
 
   return {
@@ -51,7 +51,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export const viewport: Viewport = {
-  themeColor: "#0b0b0a",
+  themeColor: "#19211f",
   colorScheme: "dark light",
 };
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState, type FormEvent } from "react";
+import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { AREAS } from "@/content/diagnostic/areas";
 import { ANSWER_OPTIONS, QUESTIONS } from "@/content/diagnostic/questions";
@@ -15,7 +15,7 @@ type Draft = {
   utm: UtmData;
 };
 
-const DRAFT_KEY = "arc_diagnostic_draft_v1";
+const DRAFT_KEY = "arc_diagnostic_draft_v2";
 
 function saveDraft(draft: Draft) {
   window.localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
@@ -42,6 +42,11 @@ export function DiagnosticQuiz() {
   const [consent, setConsent] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
+  const answeredCountRef = useRef(0);
+  const questionIndexRef = useRef(0);
+  const quizCompletedRef = useRef(false);
+  const abandonmentTrackedRef = useRef(false);
+  const quizStartedTrackedRef = useRef(false);
 
   useEffect(() => {
     const frame = window.requestAnimationFrame(() => {
@@ -56,8 +61,42 @@ export function DiagnosticQuiz() {
       }
     });
     getSessionId();
-    trackEvent("diagnostic_started", captureUtm());
-    return () => window.cancelAnimationFrame(frame);
+    if (!quizStartedTrackedRef.current) {
+      quizStartedTrackedRef.current = true;
+      trackEvent("quiz_started", {
+        ...captureUtm(),
+        question_count: QUESTIONS.length,
+      });
+    }
+
+    function trackAbandonment() {
+      if (
+        quizCompletedRef.current ||
+        abandonmentTrackedRef.current ||
+        answeredCountRef.current === 0
+      ) {
+        return;
+      }
+      abandonmentTrackedRef.current = true;
+      trackEvent("quiz_abandoned", {
+        answered_questions: answeredCountRef.current,
+        last_question_number: questionIndexRef.current + 1,
+        question_count: QUESTIONS.length,
+      });
+    }
+
+    function handleVisibilityChange() {
+      if (document.visibilityState === "hidden") trackAbandonment();
+    }
+
+    window.addEventListener("pagehide", trackAbandonment);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      window.cancelAnimationFrame(frame);
+      window.removeEventListener("pagehide", trackAbandonment);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
   }, []);
 
   const question = QUESTIONS[questionIndex];
@@ -69,21 +108,32 @@ export function DiagnosticQuiz() {
     [question],
   );
 
+  useEffect(() => {
+    answeredCountRef.current = answeredCount;
+    questionIndexRef.current = questionIndex;
+  }, [answeredCount, questionIndex]);
+
   function answerQuestion(value: number) {
     if (!question) return;
     const nextAnswers = { ...answers, [question.id]: value };
     setAnswers(nextAnswers);
-    trackEvent("diagnostic_question_answered", {
-      question: question.id,
+    trackEvent("quiz_question_answered", {
+      question_id: question.id,
       area: question.area,
-      position: question.order,
+      question_number: question.order,
+      question_count: QUESTIONS.length,
     });
 
     if (questionIndex === QUESTIONS.length - 1) {
+      quizCompletedRef.current = true;
       saveDraft({ answers: nextAnswers, questionIndex, utm });
       window.setTimeout(() => {
         setPhase("lead");
-        trackEvent("diagnostic_completed", { answered_questions: QUESTIONS.length });
+        trackEvent("quiz_completed", {
+          answered_questions: QUESTIONS.length,
+          question_count: QUESTIONS.length,
+        });
+        trackEvent("lead_form_viewed", { question_count: QUESTIONS.length });
       }, 180);
       return;
     }
@@ -159,7 +209,9 @@ export function DiagnosticQuiz() {
         </button>
         <div className="quiz-brand">A REGRA É CLARA</div>
         <span className="quiz-counter">
-          {phase === "questions" ? `${String(questionIndex + 1).padStart(2, "0")} / 25` : "PRONTO"}
+          {phase === "questions"
+            ? `${String(questionIndex + 1).padStart(2, "0")} / ${QUESTIONS.length}`
+            : "PRONTO"}
         </span>
       </div>
 
@@ -171,7 +223,7 @@ export function DiagnosticQuiz() {
         <section className="question-stage" key={question.id}>
           <div className="question-context">
             <p className="eyebrow"><span /> {AREAS[question.area].name.toUpperCase()}</p>
-            <p>PERGUNTA {areaPosition} DE 5 NESTA ÁREA</p>
+            <p>PERGUNTA {areaPosition} DE 2 NESTA ÁREA</p>
           </div>
           <h1>{question.text}</h1>
           <p className="question-instruction">Pense na sua rotina das últimas quatro semanas.</p>
@@ -197,7 +249,7 @@ export function DiagnosticQuiz() {
         </section>
       ) : (
         <section className="lead-stage">
-          <div className="lead-stage__signal"><span>25</span><small>/ 25</small></div>
+          <div className="lead-stage__signal"><span>10</span><small>/ 10</small></div>
           <div className="lead-stage__copy">
             <p className="eyebrow"><span /> DIAGNÓSTICO CONCLUÍDO</p>
             <h1>SEU RESULTADO ESTÁ PRONTO.</h1>

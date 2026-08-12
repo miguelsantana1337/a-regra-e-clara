@@ -7,46 +7,102 @@ import { SiteFooter } from "@/components/site/SiteFooter";
 export const metadata: Metadata = {
   title: "Diagnóstico",
   description:
-    "Descubra qual área da sua vida pede atenção primeiro em um diagnóstico gratuito de três minutos.",
+    "Descubra em cerca de 90 segundos qual área da sua vida precisa de atenção primeiro e receba três ações práticas.",
 };
+
+const METHOD_PHASES = [
+  {
+    number: "01",
+    title: "Clareza",
+    copy: "Você responde 10 perguntas sobre sua rotina real, sem resposta certa ou julgamento.",
+  },
+  {
+    number: "02",
+    title: "Prioridade",
+    copy: "O resultado mostra suas cinco áreas e revela qual delas pede atenção primeiro.",
+  },
+  {
+    number: "03",
+    title: "Ação",
+    copy: "Você recebe uma regra e três ações simples para começar ainda hoje.",
+  },
+];
 
 export default function DiagnosticLandingPage() {
   return (
-    <main className="landing-shell">
+    <main className="landing-shell landing-shell--v2">
       <BrandHeader />
 
-      <section className="hero-section">
+      <section className="hero-section hero-section--v2">
         <div className="hero-copy">
-          <p className="eyebrow"><span /> DIAGNÓSTICO GRATUITO · 3 MINUTOS</p>
+          <p className="eyebrow"><span /> DIAGNÓSTICO PRÁTICO · 10 PERGUNTAS · CERCA DE 90 SEGUNDOS</p>
           <h1>
-            QUAL ÁREA DA SUA VIDA ESTÁ MAIS <em>FORA DE ORDEM</em> HOJE?
+            VOCÊ SABE O QUE PRECISA MUDAR. <em>DESCUBRA POR ONDE COMEÇAR.</em>
           </h1>
           <p className="hero-lead">
-            Responda 25 perguntas e descubra onde você precisa agir primeiro —
-            e qual regra precisa parar de quebrar.
+            Identifique a área da sua vida que mais está travando sua constância
+            e receba uma regra com três ações para começar hoje.
           </p>
-          <LandingStart />
+          <LandingStart location="hero" />
           <div className="hero-trust" aria-label="Informações do diagnóstico">
-            <span>25 perguntas</span>
+            <span>Gratuito</span>
             <span>Resultado personalizado</span>
-            <span>Sem criar conta</span>
+            <span>Sem diagnóstico médico</span>
           </div>
         </div>
 
-        <aside className="hero-manifesto" aria-label="Manifesto">
-          <span className="hero-manifesto__number">01</span>
-          <div>
-            <p>A vida não sai do lugar de uma vez.</p>
-            <strong>Ela sai uma escolha por vez.</strong>
+        <aside className="result-preview" aria-label="Exemplo do resultado recebido">
+          <div className="result-preview__top">
+            <span>EXEMPLO DE RESULTADO</span>
+            <span>64/100</span>
           </div>
-          <span className="hero-manifesto__stamp">A.R.É.C.</span>
+          <div className="result-preview__body">
+            <p>SUA PRIORIDADE AGORA</p>
+            <h2>DISCIPLINA</h2>
+            <div className="result-preview__bar"><span /></div>
+            <blockquote>“Compromisso não depende de vontade.”</blockquote>
+          </div>
+          <div className="result-preview__footer">
+            <span>5 áreas analisadas</span>
+            <span>3 próximos passos</span>
+          </div>
         </aside>
+      </section>
+
+      <section className="tension-section" aria-labelledby="tension-title">
+        <p className="eyebrow eyebrow--dark"><span /> O PROBLEMA NÃO É FALTA DE INFORMAÇÃO</p>
+        <div className="tension-section__grid">
+          <h2 id="tension-title">INTENÇÃO SEM PRIORIDADE VIRA MAIS UMA SEMANA NO AUTOMÁTICO.</h2>
+          <div>
+            <p>
+              Você tenta organizar tudo ao mesmo tempo. O urgente ocupa o dia,
+              o importante fica para depois e a sensação de atraso continua.
+            </p>
+            <strong>O primeiro passo não é fazer mais. É escolher melhor onde agir.</strong>
+          </div>
+        </div>
+      </section>
+
+      <section className="v2-method" aria-labelledby="method-title">
+        <div className="section-heading">
+          <p className="eyebrow"><span /> COMEÇO, MEIO E PRÓXIMO PASSO</p>
+          <h2 id="method-title">EM CERCA DE 90 SEGUNDOS, VOCÊ SAI DO “PRECISO MUDAR” PARA “VOU COMEÇAR AQUI”.</h2>
+        </div>
+        <ol className="v2-method__grid">
+          {METHOD_PHASES.map((phase) => (
+            <li key={phase.number}>
+              <span>{phase.number}</span>
+              <h3>{phase.title}</h3>
+              <p>{phase.copy}</p>
+            </li>
+          ))}
+        </ol>
       </section>
 
       <section className="areas-section" aria-labelledby="areas-title">
         <div className="section-heading">
           <p className="eyebrow"><span /> CINCO ÁREAS. UMA PRIORIDADE.</p>
-          <h2 id="areas-title">O DIAGNÓSTICO OLHA PARA A VIDA COMO UM TODO.</h2>
+          <h2 id="areas-title">UMA LEITURA PRÁTICA DA VIDA QUE VOCÊ ESTÁ LEVANDO HOJE.</h2>
         </div>
         <div className="areas-grid">
           {AREA_ORDER.map((area) => (
@@ -62,24 +118,25 @@ export default function DiagnosticLandingPage() {
         </div>
       </section>
 
-      <section className="method-section">
-        <div className="method-quote">
-          <span className="method-quote__mark">“</span>
-          <blockquote>
-            CLAREZA NÃO RESOLVE A VIDA. MAS MOSTRA ONDE A RESPONSABILIDADE COMEÇA.
-          </blockquote>
+      <section className="product-teaser" aria-labelledby="product-teaser-title">
+        <div>
+          <p className="eyebrow eyebrow--dark"><span /> DEPOIS DO RESULTADO</p>
+          <h2 id="product-teaser-title">O DIAGNÓSTICO MOSTRA ONDE. O MÉTODO AJUDA A EXECUTAR.</h2>
         </div>
-        <ol className="method-steps">
-          <li><span>01</span><div><strong>RESPONDA COM HONESTIDADE</strong><p>Não existe resposta certa. Existe a sua rotina real.</p></div></li>
-          <li><span>02</span><div><strong>ENXERGUE O TODO</strong><p>Receba suas cinco pontuações, sem rótulos ou julgamento.</p></div></li>
-          <li><span>03</span><div><strong>COMECE POR UMA REGRA</strong><p>Saia com uma prioridade e três ações simples.</p></div></li>
-        </ol>
+        <div className="product-teaser__phases">
+          <article><span>CLAREZA</span><p>Check-up da Vida e leitura do diagnóstico.</p></article>
+          <article><span>DIREÇÃO</span><p>31 Regras Para a Vida Real e Plano 31.</p></article>
+          <article><span>EXECUÇÃO</span><p>Planner, Desafio 7 Dias e 31 Cards verticais.</p></article>
+        </div>
+        <p className="product-teaser__note">
+          A continuação é opcional e aparece com transparência depois do resultado gratuito.
+        </p>
       </section>
 
-      <section className="closing-cta">
-        <p>VOCÊ NÃO PRECISA ARRUMAR TUDO HOJE.</p>
-        <h2>PRECISA SABER POR ONDE COMEÇAR.</h2>
-        <LandingStart />
+      <section className="closing-cta closing-cta--v2">
+        <p>VOCÊ NÃO PRECISA RESOLVER TUDO HOJE.</p>
+        <h2>PRECISA ESCOLHER O PRIMEIRO MOVIMENTO.</h2>
+        <LandingStart location="closing" />
       </section>
 
       <SiteFooter />

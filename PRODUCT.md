@@ -6,15 +6,23 @@ Transformar a audiência do Luthi em leads e compradores por meio de um diagnós
 
 ## Público
 
-Pessoas interessadas em disciplina, princípios, família, saúde, trabalho e vida adulta.
+Adultos que sabem o que precisam mudar, mas têm dificuldade para transformar intenção em constância.
+
+## Promessa do diagnóstico
+
+Em cerca de 90 segundos, identificar qual área da vida pede atenção primeiro e receber uma regra com três ações para começar hoje.
 
 ## Funil
 
 Instagram → Diagnóstico → Resultado → Kit → Checkout → Acesso
 
-## Produto
+## Continuação paga
 
-Kit A Regra é Clara.
+Método A Regra é Clara. Os seis materiais são apresentados como um caminho único em três movimentos:
+
+- Clareza: Check-up da Vida e leitura do diagnóstico.
+- Direção: 31 Regras Para a Vida Real e Plano 31.
+- Execução: Planner A Regra é Clara, Desafio 7 Dias e 31 Cards verticais.
 
 ## Preço inicial
 
@@ -23,14 +31,14 @@ R$ 27.
 ## Áreas
 
 - Disciplina & Responsabilidade
-- Fé & Princípios
+- Princípios & Direção
 - Relacionamentos & Família
 - Corpo & Saúde
 - Trabalho & Dinheiro
 
 ## Diagnóstico
 
-25 perguntas, cinco por área, com pontuação de 0 a 4. Nenhum cadastro é pedido antes da conclusão. As respostas individuais são usadas para o cálculo durante a sessão; somente as pontuações agregadas são persistidas.
+10 perguntas, duas por área, com pontuação de 0 a 4. Cada área é normalizada para a escala de 0 a 20, preservando o total de 0 a 100. Nenhum cadastro é pedido antes da conclusão. As respostas individuais são usadas para o cálculo durante a sessão; somente as pontuações agregadas são persistidas.
 
 ## Regras de conteúdo
 

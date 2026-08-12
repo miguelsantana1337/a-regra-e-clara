@@ -2,7 +2,7 @@
 
 ## Posição
 
-“A Regra é Clara” deve parecer uma marca editorial forte e prática, não um e-book promocional genérico.
+“A Regra é Clara” é um método prático de clareza, direção e execução para a vida adulta. Deve parecer uma marca editorial sóbria, não um e-book promocional genérico nem um produto espiritual.
 
 ## Voz
 
@@ -14,7 +14,7 @@
 
 ## Vocabulário preferido
 
-Direção, responsabilidade, palavra, constância, presença, princípio, escolha, atitude, estrutura, ajuste.
+Direção, responsabilidade, palavra, constância, presença, princípio, escolha, atitude, estrutura, prioridade, ajuste.
 
 ## Evitar
 
@@ -22,4 +22,4 @@ Fracasso, irresponsável, desorganizado, vida ruim, cura, tratamento, enriquecim
 
 ## Visual
 
-Preto, branco quente e amarelo de sinalização. Tipografia grande, contraste alto, grades editoriais e poucos elementos decorativos. O conteúdo precisa continuar legível e marcante em telas pequenas.
+Grafite azulado, branco marfim, bege e terracota. Tipografia grande com leitura editorial, contraste alto, grades simples e poucos elementos decorativos. A terracota sinaliza ação e prioridade sem trazer a aparência neon da V1. O conteúdo precisa continuar legível e marcante em telas pequenas.

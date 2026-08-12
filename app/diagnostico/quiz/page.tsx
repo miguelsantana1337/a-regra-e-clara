@@ -3,7 +3,7 @@ import { DiagnosticQuiz } from "@/components/diagnostic/DiagnosticQuiz";
 
 export const metadata: Metadata = {
   title: "Seu diagnóstico",
-  description: "Responda 25 perguntas e descubra qual área precisa de atenção primeiro.",
+  description: "Responda 10 perguntas e descubra qual área precisa de atenção primeiro.",
 };
 
 export default function DiagnosticQuizPage() {

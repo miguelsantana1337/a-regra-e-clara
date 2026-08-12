@@ -7,13 +7,14 @@ MVP mobile-first de um funil de diagnóstico pessoal:
 ## O que está funcionando
 
 - Landing do diagnóstico em `/diagnostico`.
-- 25 perguntas, cinco por área, exibidas uma por vez.
+- 10 perguntas, duas por área, exibidas uma por vez.
 - Progresso temporário salvo no dispositivo.
 - Captura de nome, WhatsApp, e-mail e consentimento opcional depois da conclusão.
 - Pontuação geral e por área, incluindo empates na menor nota.
 - Conteúdo dinâmico com 3 resultados gerais e 15 interpretações específicas.
 - Persistência de leads, resultados agregados, UTMs e eventos no Supabase.
-- Oferta do Kit por R$ 27 com clique de interesse mensurável.
+- Oferta do Método por R$ 27 com clique de interesse mensurável.
+- Painel protegido em `/admin/analytics` com funil, abandono e origem.
 
 ## Limite do MVP
 
@@ -35,8 +36,7 @@ O projeto usa Next.js nativo (preset **Next.js** na Vercel) e Supabase. Copie
 `SUPABASE_SECRET_KEY` é exclusiva do servidor e nunca deve receber o prefixo
 `NEXT_PUBLIC_`.
 
-Antes do primeiro uso, execute no Supabase a migração em
-`supabase/migrations/20260811000000_initial_schema.sql`.
+Antes do primeiro uso, execute as migrações de `supabase/migrations/` na ordem do nome.
 
 ```bash
 npm install
